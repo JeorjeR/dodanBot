@@ -1,6 +1,7 @@
 import os
 import telebot
 
+from bot.domain.exceptions import DodanException
 from bot.domain.storage.storage import Storage, init_storage
 from bot.web.post_services import get_post_content
 from bot.web.utilites import create_markup, logging_message
