@@ -1,81 +1,64 @@
-from typing import Union
-
-
-class Message:
-    def __init__(self, path: str, usable: bool, text: str):
-        self.text: str = text
-        self.path: str = path
-        self.usable: bool = usable
+class Entity:
+    def __init__(self, **kwargs):
+        for kwarg_key, kwarg_value in kwargs.items():
+            self.__dict__[kwarg_key] = kwarg_value
 
     def to_dict(self) -> dict:
-        return {
-            "path": self.path,
-            "usable": self.usable,
-            "text": self.text
+        return{
+            f"{attr}": value for attr, value in self.__dict__.items()
         }
 
-    @staticmethod
-    def from_json(message_dict: dict):
-        return Message(
-            path=message_dict['path'],
-            usable=message_dict['usable'],
-            text=message_dict['text']
+    def from_json(self, entity_dict: dict):
+        self.__init__(
+            **{attr: entity_dict[attr] for attr in self.__dict__}
         )
+        return self
 
 
-class Photo:
-    def __init__(self, path: str, usable: bool):
-        self.path: str = path
-        self.usable: bool = usable
+class Message(Entity):
+    def __init__(self, **kwargs):
+        if not kwargs:
+            self.path = None
+            self.usable = None
+            self.text = None
+        else:
+            super().__init__(**kwargs)
 
-    def get_file(self):
-        return open(self.path[:-1], 'rb')
-
-    def to_dict(self) -> dict:
-        return {
-            "path": self.path,
-            "usable": self.usable,
-        }
-
-    @staticmethod
-    def from_json(photo_dict: dict):
-        return Photo(
-            path=photo_dict['path'],
-            usable=photo_dict['usable'],
-        )
+    def get_content(self):
+        return self.__dict__['text']
 
 
-class MessageRepository:
+class Photo(Entity):
+    def __init__(self, **kwargs):
+        if not kwargs:
+            self.path = None
+            self.usable = None
+        else:
+            super().__init__(**kwargs)
 
-    def __init__(self, iterable: list[Union[dict, Message]]):
-        self.messages = [Message.from_json(message) for message in iterable]
+    def get_content(self):
+        return open(self.__dict__['path'][:-1], 'rb')
 
-    def add_message(self, message: Message):
-        self.messages.append(message)
+
+class Repository:
+    name = "entity"
+
+    def __init__(self, iterable):
+        self.entities = iterable
 
     def get_json(self) -> dict:
         return {
-            "message": [message.to_dict() for message in self.messages]
+            self.name: [entity.to_dict() for entity in self.entities]
         }
 
     def make_all_useless(self):
-        for message in self.messages:
-            message.usable = False
+        for entity in self.entities:
+            entity.usable = False
 
 
-class PhotoRepository:
+class MessageRepository(Repository):
+    name = "message"
 
-    def __init__(self, iterable: list[dict]):
-        self.photos = [Photo.from_json(photo) for photo in iterable]
 
-    def add_photo(self, photo: Photo):
-        self.photos.append(photo)
-
-    def get_json(self) -> dict:
-        return {
-            "photo": [photo.to_dict() for photo in self.photos]
-        }
-
-    def make_all_useless(self):
-        for message in self.photos:
-            message.usable = False
+class PhotoRepository(Repository):
+    name = "photo"

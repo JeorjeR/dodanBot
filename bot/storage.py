@@ -12,11 +12,15 @@ class Storage:
         else:
             with open(self.storage_path, encoding='utf-8') as json_file:
                 data = json.load(json_file)
-                self.messages = MessageRepository(data['storage']['message'])
-                self.photos = PhotoRepository(data['storage']['photo'])
+                self.messages = MessageRepository(self.to_entity(Message, data['storage']['message']))
+                self.photos = PhotoRepository(self.to_entity(Photo, data['storage']['photo']))
 
     def dumb_repositories(self):
         self.dump_any_repositories(self.messages, self.photos, self.storage_path)
+
+    @staticmethod
+    def to_entity(iterable, cls_):
+        return [cls_().from_json(element) for element in iterable]
 
     @staticmethod
     def dump_any_repositories(messages: MessageRepository, photos: PhotoRepository, storage_path: str):
@@ -36,13 +40,13 @@ class UpdateStorage:
 
     def merge(self):
         result_messages = self.get_merged_repository(
-            self.new_storage.messages.messages,
-            self.old_storage.messages.messages,
+            self.new_storage.messages.entities,
+            self.old_storage.messages.entities,
             'text'
         )
         result_photos = self.get_merged_repository(
-            self.new_storage.photos.photos,
-            self.old_storage.photos.photos,
+            self.new_storage.photos.entities,
+            self.old_storage.photos.entities,
             'path'
         )
         return Storage(
@@ -55,9 +59,4 @@ class UpdateStorage:
         values_from_key = [element.__dict__[key] for element in old]
         unique_elements = [element for element in new if element.__dict__[key] not in values_from_key]
         result = old + unique_elements
-        return [element.to_dict() for element in result]
-
-
-
-
-
+        return result
