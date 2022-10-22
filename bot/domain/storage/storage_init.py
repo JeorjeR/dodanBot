@@ -49,3 +49,7 @@ def get_new_storage() -> Storage:
         }
     )
 
+
+def set_storage():
+    storage: Storage = get_new_storage()
+    storage.dumb_repositories()

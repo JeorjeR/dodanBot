@@ -49,13 +49,20 @@ class Storage:
                     repository.get_json() for repository in repositories
                 )
             }
-            json.dump(storage_dict, storage_file, ensure_ascii=True)
+            json.dump(storage_dict, storage_file)
 
     @staticmethod
     def get_json_storage() -> dict:
-        with open(Storage.storage_path, encoding='utf-8') as json_file:
-            data = json.load(json_file)
-            return data
+        try:
+            with open(Storage.storage_path, encoding='utf-8') as json_file:
+                data = json.load(json_file)
+                return data
+        except json.decoder.JSONDecodeError:
+            from bot.domain.storage.storage_init import set_storage
+            set_storage()
+            with open(Storage.storage_path, encoding='utf-8') as json_file:
+                data = json.load(json_file)
+                return data
 
 
 def init_storage() -> Storage:
