@@ -29,7 +29,7 @@ def get_user_from_message(message: Message):
 
 def logging_message(bot: TeleBot, message: Message):
     import datetime
-    user_information = get_user_from_message(message)
-    date_of_log = datetime.datetime.now()
-    log = f'{user_information}\nDate of log: {date_of_log:%H:%M %d.%m.%Y}'
-    bot.send_message(os.environ['LOG_ID'], log)
+    bot.send_message(
+        os.environ['LOG_ID'],
+        f'{get_user_from_message(message)}\nDate of log: {datetime.datetime.now():%H:%M %d.%m.%Y}'
+    )
