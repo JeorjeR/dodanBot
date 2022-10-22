@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 def main():
     load_dotenv()  # take environment variables from .env
     try:
-        from bot.controller import start_bot
+        from bot.web.controller import start_bot
         start_bot()
     except (Exception, ) as ex:
         raise ex

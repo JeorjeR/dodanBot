@@ -1,4 +1,4 @@
-from bot.entity import Entity, Photo, Message
+from bot.domain.objects.entity import Entity, Photo, Message
 
 
 class Repository:

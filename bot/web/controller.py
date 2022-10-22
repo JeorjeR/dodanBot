@@ -1,7 +1,7 @@
 import os
 import telebot
 from telebot import types
-from bot.post_services import get_post_content
+from bot.web.post_services import get_post_content
 
 bot: telebot.TeleBot = telebot.TeleBot(os.environ['ACCESS_TOKEN'])  # create telegram bot
 

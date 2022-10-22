@@ -1,6 +1,6 @@
 import json
 import os
-from bot.repository import RepositoryFactory
+from bot.domain.objects.repository import RepositoryFactory
 
 
 class Storage:

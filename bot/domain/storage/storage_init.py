@@ -1,6 +1,6 @@
 import os
-from bot.repository import Repository
-from bot.storage import Storage
+from bot.domain.objects.repository import Repository
+from bot.domain.storage.storage import Storage
 
 
 class MessageRepository(Repository):
