@@ -18,12 +18,14 @@ class Repository:
     def create_repository_from_json(self, json_repository: list[dict]):
         return [self.entity_class(json_entity=entity) for entity in json_repository]
 
+    def add_entities(self, entities_list: list[entity_class]):
+        self.entities += entities_list
+
 
 class RepositoryFactory:
     @staticmethod
     def get_repository(name_repository):
         if name_repository == 'message':
-            # TODO дожга вызываться функция которая вернет обект репозитория созданного класса
             cls_ = type(
                 'MessageRepository',
                 (Repository,),

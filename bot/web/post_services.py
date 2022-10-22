@@ -7,6 +7,7 @@ from bot.domain.storage.storage import Storage, init_storage
 
 def get_entity(repository: Repository):
     useless_entity = [entity for entity in repository.entities if not entity.usable]
+    print(f'{repository.__class__.__name__} --> {len(useless_entity)}')
     if not useless_entity:
         repository.make_all_useless()
         entity: Union[Photo, Message] = random.choice(repository.entities)
@@ -16,13 +17,9 @@ def get_entity(repository: Repository):
     return entity.get_content()
 
 
-def get_post_content():
-    storage: Storage = init_storage()
-    # Инициализируем и обновляем хранилище, есди появились новые данные
-    # TODO нужны дескрипторы для доступа к репозиториям
+def get_post_content(storage: Storage):
     post = {
         'photo': get_entity(storage.get_photos()),
         'caption': get_entity(storage.get_messages())
     }
-    storage.dumb_repositories()
     return post

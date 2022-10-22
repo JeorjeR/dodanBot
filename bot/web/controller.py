@@ -1,28 +1,37 @@
 import os
 import telebot
-from telebot import types
+
+from bot.domain.storage.storage import Storage, init_storage
 from bot.web.post_services import get_post_content
+from bot.web.utilites import create_markup
 
 bot: telebot.TeleBot = telebot.TeleBot(os.environ['ACCESS_TOKEN'])  # create telegram bot
+storage: Storage = init_storage()  # init storage
 
 
 def start_bot():
     """starting bot"""
-    bot.infinity_polling(none_stop=True, interval=0)
+    try:
+        bot.infinity_polling(none_stop=True, interval=0)
+    finally:
+        storage.dumb_repositories()
 
 
-@bot.message_handler(commands=['Шындарахнуть'])
-def send_post(message):
+@bot.message_handler(content_types=['text'])
+def process_message(message):
+    markup = create_markup(message)  # Создаем кнопки
     # Создаем пост
-    bot.send_photo(
-        chat_id=os.environ['CHAT_ID'],
-        **get_post_content()
-    )
+    if message.text == 'Шындарахнуть':
+        bot.send_photo(
+            chat_id=os.environ['CHAT_ID'],
+            **get_post_content(storage)
+        )
+        bot.send_message(message.chat.id, 'Кого шындарахнули?!', reply_markup=markup)
 
-
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    markup = types.ReplyKeyboardMarkup()
-    command = types.KeyboardButton('/Шындарахнуть')
-    markup.add(command)
-    bot.send_message(message.chat.id, 'Я командос Четкий нах!', reply_markup=markup)
+    elif message.text == 'Обновить':
+        if message.chat.id == int(os.environ['MY_ID']):
+            from bot.domain.storage.update_storage import update_storage
+            update_storage()
+            bot.send_message(message.chat.id, 'Я обновился нах!', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'Я командос Четкий нах!', reply_markup=markup)

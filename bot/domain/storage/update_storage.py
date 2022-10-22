@@ -1,5 +1,9 @@
+from dotenv import load_dotenv
+from bot.domain.objects.repository import  Repository
 from bot.domain.storage.storage import Storage, init_storage
 from bot.domain.storage.storage_init import get_new_storage
+
+load_dotenv()
 
 
 class UpdateStorage:
@@ -8,30 +12,30 @@ class UpdateStorage:
         self.old_storage: Storage = old_storage
 
     def merge(self):
-        result_messages = self.get_merged_repository(
-            self.new_storage.messages.entities,
-            self.old_storage.messages.entities,
-            'text'
-        )
-        result_photos = self.get_merged_repository(
-            self.new_storage.photos.entities,
-            self.old_storage.photos.entities,
-            'path'
-        )
         return Storage(
-            MessageRepository(result_messages),
-            PhotoRepository(result_photos)
+            json_storage={
+                'storage': dict(
+                    self.get_merged_repository(
+                        self.new_storage.get_repository(repository_name),
+                        self.old_storage.get_repository(repository_name),
+                        Storage.get_repository_pk(repository_name)
+                    ).get_json() for repository_name in self.new_storage.get_names_of_repository()
+                )
+            }
         )
 
     @staticmethod
-    def get_merged_repository(new, old, key):
-        values_from_key = [element.__dict__[key] for element in old]
-        unique_elements = [element for element in new if element.__dict__[key] not in values_from_key]
-        result = old + unique_elements
-        return result
+    def get_merged_repository(new: Repository, old: Repository, key: str):
+        values_from_key = [element.__dict__[key] for element in old.entities]
+        unique_elements = [element for element in new.entities if element.__dict__[key] not in values_from_key]
+        # TODO описать метод присоединения к репозитори списка
+        old.add_entities(unique_elements)
+        return old
 
 
 def update_storage():
     old_storage: Storage = init_storage()
-    new_storage: Storage = Storage(**get_new_storage())
+    new_storage: Storage = get_new_storage()
     storage: Storage = UpdateStorage(new_storage, old_storage).merge()
+    storage.dumb_repositories()
+

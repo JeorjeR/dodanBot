@@ -1,6 +1,11 @@
 import json
 import os
+
+from dotenv import load_dotenv
+
 from bot.domain.objects.repository import RepositoryFactory
+
+load_dotenv()
 
 
 class Storage:
@@ -15,6 +20,19 @@ class Storage:
 
     def get_messages(self):
         return self.__dict__['message']
+
+    def get_names_of_repository(self):
+        return list(self.__dict__.keys())
+
+    def get_repository(self, repository_name: str):
+        return self.__dict__[repository_name]
+
+    @staticmethod
+    def get_repository_pk(repository_name: str):
+        if repository_name == 'message':
+            return 'text'
+        else:
+            return 'path'
 
     @staticmethod
     def create_repository_from_json(name_repository: str, json_repository: list[dict]):
