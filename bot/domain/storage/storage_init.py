@@ -1,10 +1,7 @@
 import os
 
-from dotenv import load_dotenv
-
 from bot.domain.storage.storage import Storage
-
-load_dotenv()
+from bot.web.controller import start_bot
 
 
 def get_messages() -> list[dict]:

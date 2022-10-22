@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from bot.domain.objects.repository import Repository
 from bot.domain.storage.storage import Storage, init_storage
 from bot.domain.storage.storage_init import get_new_storage
+from bot.web.controller import start_bot
 
 load_dotenv()
 
@@ -38,3 +39,4 @@ def update_storage():
     new_storage: Storage = get_new_storage()
     storage: Storage = UpdateStorage(new_storage, old_storage).merge()
     storage.dumb_repositories()
+

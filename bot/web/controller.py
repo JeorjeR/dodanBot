@@ -36,11 +36,15 @@ def process_message(message):
             from bot.domain.storage.update_storage import update_storage
             update_storage()
             bot.send_message(message.chat.id, 'Я обновился нах!', reply_markup=markup)
+        else:
+            bot.send_message(message.chat.id, 'Я что, ДОДАН??!', reply_markup=markup)
+
     elif message.text == 'Инициализировать':
         if message.chat.id == int(os.environ['MY_ID']):
             from bot.domain.storage.storage_init import set_storage
             set_storage()
             bot.send_message(message.chat.id, 'Иницивнвлиавв...!', reply_markup=markup)
-
+        else:
+            bot.send_message(message.chat.id, 'Я что, ДОДАН??!', reply_markup=markup)
     else:
         bot.send_message(message.chat.id, 'Я командос Четкий нах!', reply_markup=markup)

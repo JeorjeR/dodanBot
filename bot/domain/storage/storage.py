@@ -1,11 +1,7 @@
 import json
 import os
 
-from dotenv import load_dotenv
-
 from bot.domain.objects.repository import RepositoryFactory
-
-load_dotenv()
 
 
 def storage_empty_exception(func):
