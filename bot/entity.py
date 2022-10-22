@@ -10,32 +10,17 @@ class Entity:
 
     def from_json(self, entity_dict: dict):
         self.__init__(
-            **{attr: entity_dict[attr] for attr in self.__dict__}
+            **{attr: entity_dict[attr] for attr in entity_dict}
         )
         return self
 
 
 class Message(Entity):
-    def __init__(self, **kwargs):
-        if not kwargs:
-            self.path = None
-            self.usable = None
-            self.text = None
-        else:
-            super().__init__(**kwargs)
-
     def get_content(self):
         return self.__dict__['text']
 
 
 class Photo(Entity):
-    def __init__(self, **kwargs):
-        if not kwargs:
-            self.path = None
-            self.usable = None
-        else:
-            super().__init__(**kwargs)
-
     def get_content(self):
         return open(self.__dict__['path'][:-1], 'rb')
 

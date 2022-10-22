@@ -19,7 +19,7 @@ class Storage:
         self.dump_any_repositories(self.messages, self.photos, self.storage_path)
 
     @staticmethod
-    def to_entity(iterable, cls_):
+    def to_entity(cls_, iterable):
         return [cls_().from_json(element) for element in iterable]
 
     @staticmethod

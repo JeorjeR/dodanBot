@@ -35,6 +35,7 @@ def get_photos() -> list[Photo]:
 
 
 def get_new_storage():
+    h = Message()
     messages_repository: MessageRepository = MessageRepository(get_messages())
     photo_repository: PhotoRepository = PhotoRepository(get_photos())
     # Storage.dump_any_repositories(messages_repository, photo_repository, Storage.storage_path)
