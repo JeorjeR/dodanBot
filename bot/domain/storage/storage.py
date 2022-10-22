@@ -8,6 +8,17 @@ from bot.domain.objects.repository import RepositoryFactory
 load_dotenv()
 
 
+def storage_empty_exception(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except json.decoder.JSONDecodeError:
+            from bot.domain.storage.storage_init import set_storage
+            set_storage()
+            return func(*args, **kwargs)
+    return wrapper
+
+
 class Storage:
     storage_path = os.environ['STORAGE_PATH']
 
@@ -60,12 +71,14 @@ class Storage:
         except json.decoder.JSONDecodeError:
             from bot.domain.storage.storage_init import set_storage
             set_storage()
-            with open(Storage.storage_path, encoding='utf-8') as json_file:
-                data = json.load(json_file)
-                return data
+            raise
 
 
+@storage_empty_exception
 def init_storage() -> Storage:
     json_storage: dict = Storage.get_json_storage()
     storage: Storage = Storage(json_storage=json_storage)
     return storage
+
+
+
