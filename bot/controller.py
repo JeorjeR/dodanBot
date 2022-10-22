@@ -1,7 +1,7 @@
 import os
 import telebot
 from telebot import types
-from post_creating import create_post
+from bot.post_services import get_post_content
 
 bot: telebot.TeleBot = telebot.TeleBot(os.environ['ACCESS_TOKEN'])  # create telegram bot
 
@@ -14,7 +14,10 @@ def start_bot():
 @bot.message_handler(commands=['Шындарахнуть'])
 def send_post(message):
     # Создаем пост
-    create_post(bot)
+    bot.send_photo(
+        chat_id=os.environ['CHAT_ID'],
+        **get_post_content()
+    )
 
 
 @bot.message_handler(func=lambda message: True)

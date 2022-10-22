@@ -1,7 +1,7 @@
 class Entity:
-    def __init__(self, **kwargs):
-        for kwarg_key, kwarg_value in kwargs.items():
-            self.__dict__[kwarg_key] = kwarg_value
+    def __init__(self, *, json_entity: dict):
+        for key, value in json_entity.items():
+            self.__dict__[key] = value
 
     def to_dict(self) -> dict:
         return{
@@ -22,28 +22,4 @@ class Message(Entity):
 
 class Photo(Entity):
     def get_content(self):
-        return open(self.__dict__['path'][:-1], 'rb')
-
-
-class Repository:
-    name = "entity"
-
-    def __init__(self, iterable):
-        self.entities = iterable
-
-    def get_json(self) -> dict:
-        return {
-            self.name: [entity.to_dict() for entity in self.entities]
-        }
-
-    def make_all_useless(self):
-        for entity in self.entities:
-            entity.usable = False
-
-
-class MessageRepository(Repository):
-    name = "message"
-
-
-class PhotoRepository(Repository):
-    name = "photo"
+        return open(self.__dict__['path'], 'rb')

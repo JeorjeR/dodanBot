@@ -1,62 +1,46 @@
 import json
-from bot.entity import MessageRepository, PhotoRepository, Message, Photo
+import os
+from bot.repository import RepositoryFactory
 
 
 class Storage:
-    storage_path = 'E:\\Files\\storage\\storage1.json'
+    storage_path = os.environ['STORAGE_PATH']
 
-    def __init__(self, messages=None, photos=None):
-        if messages and photos:
-            self.messages = messages
-            self.photos = photos
-        else:
-            with open(self.storage_path, encoding='utf-8') as json_file:
-                data = json.load(json_file)
-                self.messages = MessageRepository(self.to_entity(Message, data['storage']['message']))
-                self.photos = PhotoRepository(self.to_entity(Photo, data['storage']['photo']))
+    def __init__(self, *, json_storage):
+        for name_repository, json_repository in json_storage['storage'].items():
+            self.__dict__[name_repository] = self.create_repository_from_json(name_repository, json_repository)
+
+    def get_photos(self):
+        return self.__dict__['photo']
+
+    def get_messages(self):
+        return self.__dict__['message']
+
+    @staticmethod
+    def create_repository_from_json(name_repository: str, json_repository: list[dict]):
+        return RepositoryFactory.get_repository(name_repository)(json_repository)
 
     def dumb_repositories(self):
-        self.dump_any_repositories(self.messages, self.photos, self.storage_path)
+        self.dump_any_repositories(*self.__dict__.values())
 
     @staticmethod
-    def to_entity(cls_, iterable):
-        return [cls_().from_json(element) for element in iterable]
-
-    @staticmethod
-    def dump_any_repositories(messages: MessageRepository, photos: PhotoRepository, storage_path: str):
-        with open(storage_path, 'w') as storage_file:
+    def dump_any_repositories(*repositories):
+        with open(Storage.storage_path, 'w') as storage_file:
             storage_dict = {
-                "storage": {
-                    **messages.get_json(),
-                    **photos.get_json()}
+                "storage": dict(
+                    repository.get_json() for repository in repositories
+                )
             }
             json.dump(storage_dict, storage_file, ensure_ascii=True)
 
-
-class UpdateStorage:
-    def __init__(self, new_storage: Storage, old_storage: Storage):
-        self.new_storage: Storage = new_storage
-        self.old_storage: Storage = old_storage
-
-    def merge(self):
-        result_messages = self.get_merged_repository(
-            self.new_storage.messages.entities,
-            self.old_storage.messages.entities,
-            'text'
-        )
-        result_photos = self.get_merged_repository(
-            self.new_storage.photos.entities,
-            self.old_storage.photos.entities,
-            'path'
-        )
-        return Storage(
-            MessageRepository(result_messages),
-            PhotoRepository(result_photos)
-        )
-
     @staticmethod
-    def get_merged_repository(new, old, key):
-        values_from_key = [element.__dict__[key] for element in old]
-        unique_elements = [element for element in new if element.__dict__[key] not in values_from_key]
-        result = old + unique_elements
-        return result
+    def get_json_storage() -> dict:
+        with open(Storage.storage_path, encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            return data
+
+
+def init_storage() -> Storage:
+    json_storage: dict = Storage.get_json_storage()
+    storage: Storage = Storage(json_storage=json_storage)
+    return storage
