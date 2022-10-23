@@ -45,6 +45,6 @@ def get_new_storage() -> Storage:
     )
 
 
-def set_storage():
+def set_storage() -> None:
     storage: Storage = get_new_storage()
     storage.dumb_repositories()

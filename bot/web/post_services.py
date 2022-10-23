@@ -17,7 +17,7 @@ def get_entity(repository: Repository):
     return entity.get_content()
 
 
-def get_post_content(storage: Storage):
+def get_post_content(storage: Storage) -> dict:
     post = {
         'photo': get_entity(storage.get_photos()),
         'caption': get_entity(storage.get_messages())

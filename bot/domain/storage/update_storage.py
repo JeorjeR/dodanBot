@@ -8,7 +8,7 @@ class UpdateStorage:
         self.new_storage: Storage = new_storage
         self.old_storage: Storage = old_storage
 
-    def merge(self):
+    def merge(self) -> Storage:
         return Storage(
             json_storage={
                 'storage': dict(
@@ -22,7 +22,7 @@ class UpdateStorage:
         )
 
     @staticmethod
-    def get_merged_repository(new: Repository, old: Repository, key: str):
+    def get_merged_repository(new: Repository, old: Repository, key: str) -> Repository:
         values_from_key = [element.__dict__[key] for element in old.entities]
         unique_elements = [element for element in new.entities if element.__dict__[key] not in values_from_key]
         # TODO описать метод присоединения к репозитори списка
@@ -30,7 +30,7 @@ class UpdateStorage:
         return old
 
 
-def update_storage():
+def update_storage() -> None:
     old_storage: Storage = init_storage()
     new_storage: Storage = get_new_storage()
     storage: Storage = UpdateStorage(new_storage, old_storage).merge()
