@@ -1,10 +1,6 @@
-from dotenv import load_dotenv
 from bot.domain.objects.repository import Repository
 from bot.domain.storage.storage import Storage, init_storage
 from bot.domain.storage.storage_init import get_new_storage
-from bot.web.controller import start_bot
-
-load_dotenv()
 
 
 class UpdateStorage:

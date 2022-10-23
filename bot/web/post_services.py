@@ -2,7 +2,7 @@ import random
 from typing import Union
 from bot.domain.objects.entity import Message, Photo
 from bot.domain.objects.repository import Repository
-from bot.domain.storage.storage import Storage, init_storage
+from bot.domain.storage.storage import Storage
 
 
 def get_entity(repository: Repository):

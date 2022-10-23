@@ -75,6 +75,3 @@ def init_storage() -> Storage:
     json_storage: dict = Storage.get_json_storage()
     storage: Storage = Storage(json_storage=json_storage)
     return storage
-
-
-

@@ -1,7 +1,6 @@
 import os
 
 from bot.domain.storage.storage import Storage
-from bot.web.controller import start_bot
 
 
 def get_messages() -> list[dict]:

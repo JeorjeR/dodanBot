@@ -1,4 +1,3 @@
-import os
 from itertools import combinations
 
 with open('E:\\files\\phrases\\nekit.txt', 'r', encoding='utf-8') as file:
