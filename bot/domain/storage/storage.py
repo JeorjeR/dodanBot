@@ -1,7 +1,7 @@
 import json
 import os
 
-from bot.domain.objects.repository import RepositoryFactory
+from bot.domain.objects.repository import RepositoryFactory, Repository
 
 
 def storage_empty_exception(func):
@@ -22,34 +22,34 @@ class Storage:
         for name_repository, json_repository in json_storage['storage'].items():
             self.__dict__[name_repository] = self.create_repository_from_json(name_repository, json_repository)
 
-    def get_photos(self):
+    def get_photos(self) -> Repository:
         return self.__dict__['photo']
 
-    def get_messages(self):
+    def get_messages(self) -> Repository:
         return self.__dict__['message']
 
-    def get_names_of_repository(self):
+    def get_names_of_repository(self) -> list:
         return list(self.__dict__.keys())
 
-    def get_repository(self, repository_name: str):
+    def get_repository(self, repository_name: str) -> Repository:
         return self.__dict__[repository_name]
 
     @staticmethod
-    def get_repository_pk(repository_name: str):
+    def get_repository_pk(repository_name: str) -> str:
         if repository_name == 'message':
             return 'text'
         else:
             return 'path'
 
     @staticmethod
-    def create_repository_from_json(name_repository: str, json_repository: list[dict]):
+    def create_repository_from_json(name_repository: str, json_repository: list[dict]) -> Repository:
         return RepositoryFactory.get_repository(name_repository)(json_repository)
 
-    def dumb_repositories(self):
+    def dumb_repositories(self) -> None:
         self.dump_any_repositories(*self.__dict__.values())
 
     @staticmethod
-    def dump_any_repositories(*repositories):
+    def dump_any_repositories(*repositories) -> None:
         with open(Storage.storage_path, 'w') as storage_file:
             storage_dict = {
                 "storage": dict(
@@ -60,14 +60,9 @@ class Storage:
 
     @staticmethod
     def get_json_storage() -> dict:
-        try:
-            with open(Storage.storage_path, encoding='utf-8') as json_file:
-                data = json.load(json_file)
-                return data
-        except json.decoder.JSONDecodeError:
-            from bot.domain.storage.storage_init import set_storage
-            set_storage()
-            raise
+        with open(Storage.storage_path, encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            return data
 
 
 @storage_empty_exception

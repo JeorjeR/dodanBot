@@ -35,7 +35,6 @@ def get_photos() -> list[dict]:
 
 
 def get_new_storage() -> Storage:
-    # Storage.dump_any_repositories(messages_repository, photo_repository)
     return Storage(
         json_storage={
             'storage': {
